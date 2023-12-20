@@ -1,2 +1,2 @@
 # sudoku
-Developed by Nurmuhamadjonof, Sirojiddinov and Vosiev
+Developed by Command CI-36
