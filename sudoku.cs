@@ -1,256 +1,444 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+:root {
+  --bg-main: #f0f2f5;
+  --bg-body: #fff;
+  --color-txt: #000;
+  --filled-color: #000;
+  --filled-bg: #caf0f8;
 
-namespace Sudoku
-{
-    public partial class Form1 : Form
-    {
-        const int n = 3;
-        const int sizeButton = 50;
-        public int[,] map = new int[n * n, n * n];
-        public Button[,] buttons = new Button[n * n, n * n];
-        public Form1()
-        {
-            InitializeComponent();
-            GenerateMap();
-        }
+  --white: #fff;
+  --blue: #00aeef;
+  --red: #e91e63;
+  --black: #000;
 
-        public void GenerateMap()
-        {
-            for(int i = 0; i < n * n; i++)
-            {
-                for(int j = 0; j < n * n; j++)
-                {
-                    map[i, j] = (i * n + i / n + j) % (n * n) + 1;
-                    buttons[i, j] = new Button();
-                }
-            }
-            //MatrixTransposition();
-            //SwapRowsInBlock();
-            //SwapColumnsInBlock();
-            //SwapBlocksInRow();
-            //SwapBlocksInColumn();
-            Random r = new Random();
-            for(int i = 0; i < 40; i++)
-            {
-                ShuffleMap(r.Next(0, 5));
-            }
-           
-            CreateMap();
-            HideCells();
-        }
+  --nav-size: 70px;
+  --sudoku-cell-size: 50px;
 
-        public void HideCells()
-        {
-            int N = 40;
-            Random r = new Random();
-            while (N > 0)
-            {
-                for (int i = 0; i < n * n; i++)
-                {
-                    for (int j = 0; j < n * n; j++)
-                    {
-                        if (!string.IsNullOrEmpty(buttons[i, j].Text)){
-                            int a = r.Next(0, 3);
-                            buttons[i, j].Text = a == 0 ? "" : buttons[i, j].Text;
-                            buttons[i, j].Enabled = a == 0 ? true : false;
-                            if (a == 0)
-                                N--;
-                            if (N <= 0)
-                                break;
-                        }
-                    }
-                    if (N <= 0)
-                        break;
-                }
-            }
-        }
+  --border-radius: 10px;
 
-        public void ShuffleMap(int i)
-        {
-            switch (i)
-            {
-                case 0:
-                    MatrixTransposition();
-                    break;
-                case 1:
-                    SwapRowsInBlock();
-                    break;
-                case 2:
-                    SwapColumnsInBlock();
-                    break;
-                case 3:
-                    SwapBlocksInRow();
-                    break;
-                case 4:
-                    SwapBlocksInColumn();
-                    break;
-                default:
-                    MatrixTransposition();
-                    break;
-            }
-        }
+  --space-y: 20px;
 
-        public void SwapBlocksInColumn()
-        {
-            Random r = new Random();
-            var block1 = r.Next(0, n);
-            var block2 = r.Next(0, n);
-            while (block1 == block2)
-                block2 = r.Next(0, n);
-            block1 *= n;
-            block2 *= n;
-            for (int i = 0; i < n * n; i++)
-            {
-                var k = block2;
-                for (int j = block1; j < block1 + n; j++)
-                {
-                    var temp = map[i,j];
-                    map[i,j] = map[i,k];
-                    map[i,k] = temp;
-                    k++;
-                }
-            }
-        } 
-public void SwapBlocksInRow()
-        {
-            Random r = new Random();
-            var block1 = r.Next(0, n);
-            var block2 = r.Next(0, n);
-            while (block1 == block2)
-block2 = r.Next(0, n);
-            block1 *= n;
-            block2 *= n;
-            for(int i = 0; i < n * n; i++)
-            {
-                var k = block2;
-                for(int j = block1; j < block1 + n; j++)
-                {
-                    var temp = map[j, i];
-                    map[j, i] = map[k, i];
-                    map[k, i] = temp;
-                    k++;
-                }
-            }
-        }
-        
-        public void SwapRowsInBlock()
-        {
-            Random r = new Random();
-            var block = r.Next(0, n);
-            var row1 = r.Next(0, n);
-            var line1 = block * n + row1;
-            var row2 = r.Next(0, n);
-            while (row1 == row2)
-                row2 = r.Next(0, n);
-            var line2 = block * n + row2;
-            for(int i = 0; i < n * n; i++)
-            {
-                var temp = map[line1, i];
-                map[line1, i] = map[line2, i];
-                map[line2, i] = temp;
-            }
-        }
+  --gap: 5px;
 
-        public void SwapColumnsInBlock()
-        {
-            Random r = new Random();
-            var block = r.Next(0, n);
-            var row1 = r.Next(0, n);
-            var line1 = block * n + row1;
-            var row2 = r.Next(0, n);
-            while (row1 == row2)
-                row2 = r.Next(0, n);
-            var line2 = block * n + row2;
-            for (int i = 0; i < n * n; i++)
-            {
-                var temp = map[i,line1];
-                map[ i, line1] = map[i,line2];
-                map[i,line2] = temp;
-            }
-        }
+  --font-size: 1.5rem;
+  --font-size-lg: 2rem;
+  --font-size-xl: 3rem;
+}
 
-        public void MatrixTransposition()
-        {
-            int[,] tMap = new int[n * n, n * n];
-            for(int i = 0; i < n * n; i++)
-            {
-                for(int j = 0; j < n * n; j++)
-                {
-                    tMap[i, j] = map[j, i];
-                }
-            }
-            map = tMap;
-        }
+.dark {
+  --bg-main: #2a2a38;
+  --bg-body: #1a1a2e;
+  --color-txt: #6a6a6a;
+  --filled-color: #4f4f63;
+  --filled-bg: #000;
+}
 
-        public void CreateMap()
-        {
-            for (int i = 0; i < n * n; i++)
-            {
-                for (int j = 0; j < n * n; j++)
-                {
-                    Button button = new Button();
-                    buttons[i, j] = button;
-                    button.Size = new Size(sizeButton, sizeButton);
-                    button.Text = map[i, j].ToString();
-                    button.Click += OnCellPressed;
-                    button.Location = new Point(j * sizeButton, i * sizeButton);
-                    this.Controls.Add(button);
-                }
-            }
-        }
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
-        public void OnCellPressed(object sender, EventArgs e)
-        {
-            Button pressedButton = sender as Button;
-            string buttonText = pressedButton.Text;
-            if (string.IsNullOrEmpty(buttonText))
-            {
-                pressedButton.Text = "1";
-            }
-            else
-            {
-                int num = int.Parse(buttonText);
-                num++;
-                if (num == 10)
-                    num = 1;
-                pressedButton.Text = num.ToString();
-            }
+body {
+  font-family: sans-serif, cursive;
+  /* height: 100vh; */
+  background-color: var(--bg-body);
+  overflow-x: hidden;
+  user-select: none;
+}
 
-        }
+input {
+  font-family: sans-serif, cursive;
+  border: 2px solid var(--bg-main);
+  color: var(--color-txt);
+}
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            for(int i = 0; i < n * n; i++)
-            {
-                for(int j = 0; j < n * n; j++)
-                {
-                    var btnText = buttons[i, j].Text;
-                    if(btnText != map[i, j].ToString())
-                    {
-                        MessageBox.Show("Неверно!");
-                        return;
-                    }
-                }
-            }
-            MessageBox.Show("Верно!");
-            for(int i = 0; i < n * n; i++)
-            {
-                for (int j = 0; j < n * n; j++)
-                {
-                    this.Controls.Remove(buttons[i, j]);
-                }
-            }
-            GenerateMap();
-        }
-    }
-} 
+input:hover,
+input:focus {
+  border-color: var(--blue);
+}
 
+a {
+  text-decoration: none;
+  color: unset;
+}
 
+ul {
+  list-style-type: none;
+}
+
+nav {
+  background-color: var(--bg-body);
+  color: var(--color-txt);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-shadow: 5px 2px var(--bg-main);
+  z-index: 99;
+}
+
+.nav-container {
+  max-width: 1280px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: var(--nav-size);
+}
+
+.nav-logo {
+  font-size: var(--font-size-lg);
+  color: var(--blue);
+}
+
+.dark-mode-toggle {
+  color: var(--blue);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+}
+
+.bxs-sun {
+  display: none;
+}
+
+.bxs-moon {
+  display: inline-block;
+}
+
+.dark .bxs-sun {
+  display: inline-block;
+}
+
+.dark .bxs-moon {
+  display: none;
+}
+
+.main {
+  /* height: 100vh; */
+  padding-top: var(--nav-size);
+  display: grid;
+  place-items: center;
+}
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  min-width: 400px;
+}
+
+.start-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-screen.active {
+  transform: translateX(0);
+}
+
+.start-screen > * + * {
+  margin-top: 20px;
+}
+
+.input-name {
+  height: 80px;
+  width: 280px;
+  border-radius: var(--border-radius);
+  outline: 0;
+  background-color: var(--bg-main);
+  padding: 20px;
+  font-size: var(--font-size-lg);
+  text-align: center;
+}
+
+.btn {
+  height: 80px;
+  width: 280px;
+  background-color: var(--bg-main);
+  color: var(--color-txt);
+  border-radius: var(--border-radius);
+  display: grid;
+  place-items: center;
+  transition: width 0.3s ease-in-out;
+  overflow: hidden;
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+}
+
+.btn-blue {
+  background-color: var(--blue);
+  color: var(--white);
+}
+
+.input-err {
+  border-color: var(--red);
+  animation: bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(20px);
+  }
+  50% {
+    transform: translateX(-20px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.main-game {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px 0;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.main-game.active {
+  transform: translateX(0);
+}
+
+.main-sudoku-grid {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(9, auto);
+}
+
+.main-grid-cell {
+  height: var(--sudoku-cell-size);
+  width: var(--sudoku-cell-size);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-main);
+  color: var(--blue);
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size);
+  cursor: pointer;
+}
+
+.main-grid-cell.filled {
+  background-color: var(--filled-bg);
+  color: var(--filled-color);
+}
+
+.main-grid-cell.selected {
+  background-color: var(--blue);
+  color: var(--white);
+}
+
+.main-grid-cell:hover {
+  border: 2px solid var(--blue);
+}
+
+.main-grid-cell.hover {
+  border: 3px solid var(--blue);
+}
+
+.dark .main-grid-cell.hover {
+  border: 1px solid var(--blue);
+}
+
+.main-grid-cell.err {
+  background-color: var(--red);
+  color: var(--white);
+}
+
+.main-game-info {
+  margin-top: var(--space-y);
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.main-game-info-box {
+  height: 45px;
+  background-color: var(--bg-main);
+  color: var(--color-txt);
+  border-radius: var(--border-radius);
+  display: grid;
+  place-items: center;
+  padding: 0 20px;
+  font-size: var(--font-size);
+}
+
+.main-game-info-time {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  padding-left: 2rem;
+  margin-bottom: auto;
+}
+
+.pause-btn {
+  position: absolute;
+  right: 10px;
+  height: 30px;
+  width: 30px;
+  border-radius: var(--border-radius);
+  background-color: var(--blue);
+  color: var(--white);
+  font-size: var(--font-size);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.numbers {
+  margin-top: var(--space-y);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+}
+
+.number {
+  height: var(--sudoku-cell-size);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-main);
+  color: var(--color-txt);
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size);
+  cursor: pointer;
+}
+
+.delete {
+  background-color: var(--red);
+  color: var(--white);
+  height: var(--sudoku-cell-size);
+  border-radius: var(--border-radius);
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size);
+  cursor: pointer;
+}
+
+.pause-screen,
+.result-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-body);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  display: none;
+}
+
+.pause-screen.active,
+.result-screen.active {
+  display: flex;
+}
+
+.pause-screen > * + *,
+.result-screen > * + * {
+  margin-top: 20px;
+}
+
+.result-screen.active div {
+  animation: zoom-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.pause-screen.active .btn {
+  animation: zoom-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.result-screen .congrate {
+  font-size: var(--font-size-xl);
+  color: var(--blue);
+}
+
+.result-screen .info {
+  color: var(--color-txt);
+  font-size: var(--font-size);
+}
+
+#result-time {
+  color: var(--blue);
+  font-size: var(--font-size-xl);
+}
+
+.zoom-in {
+  animation: zoom-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes zoom-in {
+  0% {
+    transform: scale(3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.cell-err {
+  animation: zoom-out-shake 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes zoom-out-shake {
+  0% {
+    transform: scale(2);
+  }
+  25% {
+    transform: scale(2) rotate(30deg);
+  }
+  50% {
+    transform: scale(2) rotate(-30deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  :root {
+    --nav-size: 50px;
+
+    --sudoku-cell-size: 30px;
+
+    --border-radius: 5px;
+
+    --space-y: 10px;
+
+    --gap: 2px;
+
+    --font-size: 1rem;
+    --font-size-lg: 1.5rem;
+    --font-size-xl: 2rem;
+  }
+
+  .input-name,
+  .btn {
+    height: 50px;
+  }
+
+  .main-grid-cell.hover {
+    border-width: 2px;
+  }
+
+  .screen {
+    min-width: unset;
+  }
+
+  .main {
+    height: 100vh;
+  }
+}
